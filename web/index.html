@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FINN</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#14213d;--mute:#5d6b82;--line:#d9dfe7;--acc:#2b4c7e;--up:#1b7f5c;--dn:#c23b3b;--hi:#c23b3b;--md:#d99a1e;--lo:#9aa7ba;--sans:'Instrument Sans',system-ui,sans-serif;--disp:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1624;--card:#18212f;--ink:#e8edf5;--mute:#93a1b8;--line:#2a3547;--acc:#7fa6e0;--up:#4fc194;--dn:#ef7b7b;--lo:#5f6e85}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);max-width:520px;margin:auto;min-height:100vh}
+h1,h2,h3{font-family:var(--disp);margin:0}
+header{padding:18px 18px 8px}
+.brand{display:flex;justify-content:space-between;align-items:baseline}
+.brand h1{font-size:26px;letter-spacing:-.5px}
+.demo{font-size:11px;color:var(--mute);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
+.ratio{margin:14px 0 6px;font-family:var(--disp);font-size:34px;line-height:1.05;letter-spacing:-1px}
+.ratio b{color:var(--acc)}
+.bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;margin:8px 0}
+.bar i{display:block;height:100%}
+.sub{color:var(--mute);font-size:13px}
+nav{display:flex;gap:4px;padding:6px 18px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav button{flex:1;padding:9px;border:0;background:none;font:600 14px var(--sans);color:var(--mute);border-bottom:2px solid transparent;cursor:pointer}
+nav button.on{color:var(--ink);border-color:var(--acc)}
+main{padding:8px 18px 60px}
+.chips{display:flex;gap:6px;margin:6px 0 12px}
+.chip{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--ink);font:500 13px var(--sans);cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.item{background:var(--card);border-radius:10px;margin-bottom:8px;border-left:4px solid var(--lo);overflow:hidden}
+.item.p3{border-color:var(--hi)}.item.p2{border-color:var(--md)}
+.item>button{all:unset;display:block;width:100%;padding:12px 14px;cursor:pointer;box-sizing:border-box}
+.item>button:focus-visible,.chip:focus-visible,nav button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.top{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+.top b{color:var(--ink);font-size:13px}
+.hl{margin-top:3px;font-weight:500}
+.det{display:none;padding:0 14px 14px;font-size:14px}
+.item.open .det{display:block}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+th{font-weight:500;color:var(--mute);text-align:right;padding:4px 0}th:first-child,td:first-child{text-align:left}
+td{padding:6px 0;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.bio{background:var(--bg);border-radius:8px;padding:10px 12px;margin-top:8px}
+.note{font-size:12px;color:var(--mute);margin-top:6px}
+.fold{width:100%;padding:10px;border:1px dashed var(--line);background:none;color:var(--mute);border-radius:10px;font:500 13px var(--sans);cursor:pointer;margin-bottom:8px}
+.ctl{background:var(--card);border-radius:10px;padding:14px;margin-bottom:12px}
+.ctl label{display:flex;justify-content:space-between;font-weight:500;margin-bottom:4px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--mute)}
+input[type=text]{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:500 15px var(--sans);text-transform:uppercase}
+.verdict{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px}
+.v-met{background:#1b7f5c22;color:var(--up)}.v-miss{background:#c23b3b22;color:var(--dn)}.v-part{background:#d99a1e30;color:#9a6a00}
+h2{font-size:18px;margin:16px 0 6px}
+</style></head><body>
+<header>
+ <div class="brand"><h1>FINN</h1><span class="demo">live snapshot</span></div>
+ <div class="ratio" id="ratio"></div><div class="bar" id="bar"></div><div class="sub" id="ratsub"></div>
+</header>
+<nav role="tablist"><button class="on" data-t="digest">Digest</button><button data-t="alerts">Alerts</button><button data-t="research">Research</button></nav>
+<main id="main"></main>
+<script>
+// All figures below are invented sample data for the prototype; the real pipeline replaces DATA.
+const PORT=['RELIANCE','HDFCBANK','INFY','TATAMOTORS','SUNPHARMA','ITC','LT','BAJFINANCE','TITAN','ADANIPORTS','ASIANPAINT','ZOMATO','DIXON','PIDILITIND','COALINDIA'];
+const CATS={results:'Results',mgmt:'Management change',ma:'M&A',rating:'Credit rating',dividend:'Dividend',press:'Press release'};
+const EV=[{"s": "RELIANCE", "c": "results", "h": 3, "age": 6.0, "t": "In continuation of our letter of today's date on the Unaudited Financial Results (Consolidated and…", "full": "In continuation of our letter of today's date on the Unaudited Financial Results (Consolidated and Standalone) for the quarter and half year ended September 30, 2026, we attach a copy of media release being issued by the Company.", "f": "https://nsearchives.nseindia.com/corporate/kavinavora_30102026194315_SE_30102026_MR.pdf", "ttl": "Press Release"}, {"s": "RELIANCE", "c": "results", "h": 3, "age": 6.1, "t": "In continuation of our letter dated October 27, 2026, we wish to inform you that the Board of Directors of…", "full": "In continuation of our letter dated October 27, 2026, we wish to inform you that the Board of Directors of the Company, at its meeting held today, has, inter alia:1. approved the unaudited Financial Results (Consolidated and Standalone) for the quarter and half year ended September 30, 2026; and2. passed an enabling resolution authorising the issuance of listed, secured / unsecured, redeemable non-convertible debentures up to Rs. 15,000 crore, in one or more tranches, on private placement basis.", "f": "https://nsearchives.nseindia.com/corporate/kavinavora_30102026193935_SE_30102026_Results.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "DIXON", "c": "mgmt", "h": 3, "age": 9.6, "t": "Dixon Technologies (India) Limited has informed the Exchange about change in Management", "full": "Dixon Technologies (India) Limited has informed the Exchange about change in Management", "f": "https://nsearchives.nseindia.com/corporate/DIXON_30102026160939_Outcome30102026.pdf", "ttl": "Change in Management"}, {"s": "DIXON", "c": "results", "h": 3, "age": 9.6, "t": "Dixon Technologies (India) Limited has submitted to the Exchange, the financial results for the period ended…", "full": "Dixon Technologies (India) Limited has submitted to the Exchange, the financial results for the period ended September 30, 2026.", "f": "https://nsearchives.nseindia.com/corporate/DIXON_30102026160547_Outcome30102026.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "COALINDIA", "c": "results", "h": 3, "age": 10.8, "t": "Revised Investor Presentation made by Company on the Unaudited Financial Results of Coal India Limited…", "full": "Revised Investor Presentation made by Company on the Unaudited Financial Results of Coal India Limited (Standalone & Consolidated) for the 2nd Quarter and half year ended 30th Sep 26", "f": "https://nsearchives.nseindia.com/corporate/COALINDIA_30102026145533_revised_presentation.pdf", "ttl": "General Updates"}, {"s": "SUNPHARMA", "c": "results", "h": 3, "age": 11.5, "t": "Unaudited Financial Results for the quarter and half year ended 30 September 2026", "full": "Unaudited Financial Results for the quarter and half year ended 30 September 2026", "f": "https://nsearchives.nseindia.com/corporate/SUNSEC_30102026141321_BMOutcomeFinancialoct26signed.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "SUNPHARMA", "c": "press", "h": 2, "age": 17.7, "t": "Sun Pharmaceutical Industries Limited has informed the Exchange regarding a press release dated October 30,…", "full": "Sun Pharmaceutical Industries Limited has informed the Exchange regarding a press release dated October 30, 2026, titled \"ILUMYA® (tildrakizumab-asmn) approved in the U.S. for the Treatment of Adults with Active Psoriatic Arthritis\".", "f": "https://nsearchives.nseindia.com/corporate/SUNSEC_30102026080437_SE_Intimation_of_Press_Release_ILUMYA_PsA_Approval.pdf", "ttl": "Press Release"}, {"s": "COALINDIA", "c": "dividend", "h": 2, "age": 30.9, "t": "Coal India Limited has informed the Exchange about shareholder Communication on Tax on 2nd Interim Dividend…", "full": "Coal India Limited has informed the Exchange about shareholder Communication on Tax on 2nd Interim Dividend for TY 2026-27.", "f": "https://nsearchives.nseindia.com/corporate/COALINDIA_29102026185152_Sh_Comm.pdf", "ttl": "General Updates"}, {"s": "COALINDIA", "c": "results", "h": 3, "age": 31.1, "t": "Investor Presentation made by Company on the Unaudited Financial Results of Coal India Limited (Standalone &…", "full": "Investor Presentation made by Company on the Unaudited Financial Results of Coal India Limited (Standalone & Consolidated) for the 2nd Quarter and half year ended 30th Sep 26", "f": "https://nsearchives.nseindia.com/corporate/COALINDIA_29102026183725_Presentation.pdf", "ttl": "General Updates"}, {"s": "COALINDIA", "c": "dividend", "h": 2, "age": 31.4, "t": "Coal India Limited has informed the Exchange that Record date for the purpose of Dividend  is 04-Nov-2026.", "full": "Coal India Limited has informed the Exchange that Record date for the purpose of Dividend  is 04-Nov-2026.", "f": "https://nsearchives.nseindia.com/corporate/COALINDIA_29102026181749_Dividend.pdf", "ttl": "Record Date"}, {"s": "COALINDIA", "c": "results", "h": 3, "age": 31.5, "t": "Unaudited Financial Results of Coal India Limited (Standalone & Consolidated) for the 2nd Quarter and half…", "full": "Unaudited Financial Results of Coal India Limited (Standalone & Consolidated) for the 2nd Quarter and half year ended 30th Sep 26 and declaration of 2nd Interim Dividend for FY 2026-27", "f": "https://nsearchives.nseindia.com/corporate/COALINDIA_29102026181236_Result.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "ADANIPORTS", "c": "rating", "h": 2, "age": 32.9, "t": "Adani Ports and Special Economic Zone Limited has informed the Exchange about Credit Rating", "full": "Adani Ports and Special Economic Zone Limited has informed the Exchange about Credit Rating", "f": "https://nsearchives.nseindia.com/corporate/rkbhagia_29102026165003_SEINTIMATION.pdf", "ttl": "Credit Rating"}, {"s": "ASIANPAINT", "c": "press", "h": 2, "age": 35.5, "t": "Please find enclosed the Press Release on the performance of the Company for the quarter and half year ended…", "full": "Please find enclosed the Press Release on the performance of the Company for the quarter and half year ended 30th September 2026.", "f": "https://nsearchives.nseindia.com/corporate/ASIANPAINT_29102026141409_OutcomeofBM29102026signed.pdf", "ttl": "Press Release"}, {"s": "ASIANPAINT", "c": "dividend", "h": 2, "age": 35.5, "t": "The Board of Directors at their meeting held today i.e., 29th October 2026, has, inter alia, approved the…", "full": "The Board of Directors at their meeting held today i.e., 29th October 2026, has, inter alia, approved the payment of interim dividend of Rs. 5.75 (Rupees five and paise seventy-five only) per equity share of the face value of Re. 1 each for the financial year ending 31st March 2027", "f": "https://nsearchives.nseindia.com/corporate/ASIANPAINT_29102026141215_OutcomeofBM29102026signed.pdf", "ttl": "Updates"}, {"s": "ASIANPAINT", "c": "results", "h": 3, "age": 35.6, "t": "The Board of Directors at its meeting held today i.e., 29th October 2026, has, inter alia, approved the…", "full": "The Board of Directors at its meeting held today i.e., 29th October 2026, has, inter alia, approved the audited standalone and unaudited consolidated financial results of the Company for the quarter and half year ended 30th September 2026 and payment of interim dividend of Rs. 5.75 (Rupees five and paise seventy-five only) per equity share of the face value of Re. 1 each for the financial year ending 31st March 2027", "f": "https://nsearchives.nseindia.com/corporate/ASIANPAINT_29102026140936_OutcomeofBM29102026signed.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "ASIANPAINT", "c": "results", "h": 3, "age": 35.7, "t": "Asian Paints Limited has submitted to the Exchange, the financial results for the period ended September 30,…", "full": "Asian Paints Limited has submitted to the Exchange, the financial results for the period ended September 30, 2026.", "f": "https://nsearchives.nseindia.com/corporate/ASIANPAINT_29102026140213_OutcomeofBM29102026signed.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "PIDILITIND", "c": "press", "h": 2, "age": 54.6, "t": "Pidilite Industries Limited has informed the Exchange regarding a press release dated October 28, 2026,…", "full": "Pidilite Industries Limited has informed the Exchange regarding a press release dated October 28, 2026, titled \"Press Release\".", "f": "https://nsearchives.nseindia.com/corporate/Nisha_28102026190724_SEintimationPressreleaseuploadfinalsigned.pdf", "ttl": "Press Release"}, {"s": "PIDILITIND", "c": "results", "h": 3, "age": 54.8, "t": "Pidilite Industries Limited has submitted to the Exchange, the financial results for the period ended…", "full": "Pidilite Industries Limited has submitted to the Exchange, the financial results for the period ended September 30, 2026.", "f": "https://nsearchives.nseindia.com/corporate/Nisha_28102026185331_SEIntimationUFRfinalsigned.pdf", "ttl": "Outcome of Board Meeting"}, {"s": "TITAN", "c": "ma", "h": 3, "age": 59.9, "t": "Titan Company Limited has informed the Exchange about the Company has incorporated Titan Company Canada Inc.…", "full": "Titan Company Limited has informed the Exchange about the Company has incorporated Titan Company Canada Inc. as its wholly owned subsidiary.", "f": "https://nsearchives.nseindia.com/corporate/TITAN_28102026134838_SEIntimation_-_Canada_Incorporation.pdf", "ttl": "Acquisition"}, {"s": "ADANIPORTS", "c": "results", "h": 3, "age": 61.0, "t": "Adani Ports and Special Economic Zone Limited has informed the Exchange regarding a press release dated…", "full": "Adani Ports and Special Economic Zone Limited has informed the Exchange regarding a press release dated October 28, 2026, titled \"Media Release and Investor Presentation on Unaudited Financial Results(Standalone and Consolidated) for the quarter and half year ended September 30, 2026\".", "f": "https://nsearchives.nseindia.com/corporate/rkbhagia_28102026124435_IntimationofPRandIP.pdf", "ttl": "Press Release"}, {"s": "ADANIPORTS", "c": "results", "h": 3, "age": 61.1, "t": "Adani Ports and Special Economic Zone Limited has submitted to the Exchange, the financial results for the…", "full": "Adani Ports and Special Economic Zone Limited has submitted to the Exchange, the financial results for the period ended September 30, 2026.", "f": "https://nsearchives.nseindia.com/corporate/rkbhagia_28102026124014_OutcomeofBoardMeeting.pdf", "ttl": "Outcome of Board Meeting"}];
+const EOD=[["ADANIPORTS", 6.29, 2.52], ["ASIANPAINT", 0.76, 3.71], ["PIDILITIND", 2.33, 4.62]];
+const TOTAL=44,ROUTINE=22;
+const RES={INFY:{name:'Infosys (sample)',rows:[
+['Q3 FY26','Revenue growth 3–5% cc','2.9%','part','Slightly under the low end'],
+['Q4 FY26','Margin 20–22%','21.6%','met','In range'],
+['Q1 FY27','Revenue growth 3–5% cc','1.8%','miss','Management cited deal ramp-downs'],
+['Q2 FY27','Margin 20–22%','21.6%','met','Held despite wage hikes']],
+read:'Margins track what was promised; growth has not. Management language moved from "robust pipeline" to "deal conversion timing" over four calls, which is the tell.'},
+TATAMOTORS:{name:'Tata Motors (sample)',rows:[
+['Q3 FY26','Net debt reduction','On track','met','Debt down vs prior quarter'],
+['Q4 FY26','EBITDA margin 8–9%','7.6%','miss','Input cost and mix'],
+['Q1 FY27','EBITDA margin 8–9%','8.2%','part','Close, below range'],
+['Q2 FY27','Capex ₹X guided','Slightly lower','part','Spend deferred']],
+read:'Deleveraging is real. Margin guidance has been missed twice before landing near the range.'}};
+let tab='digest',win=72,open={},P={px:4,vol:2,cats:{results:1,mgmt:1,ma:1,rating:1,dividend:0,press:0}};
+const $=id=>document.getElementById(id),m=$('main');
+const pc=(a,b)=>{const v=(a/b-1)*100;return `<span class="${v>=0?'up':'dn'}">${v>=0?'+':''}${v.toFixed(1)}%</span>`};
+const ago=h=>h<24?h+'h ago':Math.round(h/24)+'d ago';
+function inWin(){return EV.filter(e=>e.age<=win)}
+function head(){const a=inWin(),hi=a.filter(e=>e.h==3).length,full=win>=72;
+ $('ratio').innerHTML=full?`<b>${a.length}</b> of ${TOTAL} filings matter.`:`<b>${a.length}</b> filings matter here.`;
+ $('bar').innerHTML=`<i style="flex:${hi};background:var(--hi)"></i><i style="flex:${a.length-hi};background:var(--md)"></i>`+(full?`<i style="flex:${ROUTINE};background:var(--lo)"></i>`:'');
+ $('ratsub').textContent=`${hi} need a look now, ${a.length-hi} worth knowing`+(full?`, ${ROUTINE} routine hidden`:'')+`. 15 holdings. Snapshot taken 31 Oct, 1:45 am IST.`}
+function item(e){const o=open[e.s+e.age+e.c];let d=`<div>${e.full}</div>`;
+ if(e.c=='mgmt')d+=`<div class="bio">The filing doesn't name the person. Background lookup runs once a name is extracted.</div>`;
+ if(e.c=='results')d+=`<div class="note">Headline numbers (Revenue, EBITDA, PBT, PAT) come from running the filing through the /results endpoint. Not run on this snapshot.</div>`;
+ d+=`<div class="note"><a href="${e.f}" target="_blank" rel="noopener" style="color:var(--acc)">Open filing (PDF)</a></div>`;
+ return `<div class="item p${e.h}${o?' open':''}"><button data-k="${e.s+e.age+e.c}"><div class="top"><b>${e.s}</b><span>${CATS[e.c]} · ${ago(Math.round(e.age))}</span></div><div class="hl">${e.t}</div></button><div class="det">${d}</div></div>`}
+function digest(){const a=inWin().sort((x,y)=>y.h-x.h||x.age-y.age);
+ m.innerHTML=`<div class="chips">${[[12,'12h'],[24,'24h'],[48,'2 days'],[72,'3 days']].map(([v,l])=>`<button class="chip${win==v?' on':''}" data-w="${v}">${l}</button>`).join('')}</div>`+(a.length?a.map(item).join(''):'<p class="sub">Nothing material in this window.</p>')+(win>=72?`<p class="note">${ROUTINE} routine filings (ESOP allotments, compliance certificates and the like) were filtered out.</p>`:'')}
+function alerts(){const hit=EOD.filter(([s,c,v])=>Math.abs(c)>=P.px||v>=P.vol);
+ const evs=EV.filter(e=>P.cats[e.c]&&e.age<=48);
+ m.innerHTML=`<div class="ctl"><label>Price move beyond ±<span>${P.px}%</span></label><input type="range" id="px" min="4" max="10" step=".5" value="${P.px}">
+ <label style="margin-top:12px">Volume above <span>${P.vol}×</span> recent average</label><input type="range" id="vol" min="2" max="5" step=".5" value="${P.vol}">
+ <div class="note">This snapshot only kept stocks that already crossed 4% or 2×, so you can tighten the thresholds here. Loosening them needs the live API.</div></div>
+ <div class="ctl"><label>Filing types I care about</label><div class="chips" style="flex-wrap:wrap">${Object.keys(P.cats).map(c=>`<button class="chip${P.cats[c]?' on':''}" data-c="${c}">${CATS[c]}</button>`).join('')}</div></div>
+ <h2>Unusual at the 30 Oct close</h2>`+(hit.length?hit.map(([s,c,v])=>`<div class="item p${Math.abs(c)>=P.px&&v>=P.vol?3:2}"><div class="row" style="border:0;padding:12px 14px"><div><b>${s}</b><div class="sub">${Math.abs(c)>=P.px?'Price move':''}${Math.abs(c)>=P.px&&v>=P.vol?' and ':''}${v>=P.vol?'volume spike':''}</div></div><div style="text-align:right"><span class="${c>=0?'up':'dn'}"><b>${c>0?'+':''}${c}%</b></span><div class="sub">${v}× volume</div></div></div></div>`).join(''):'<p class="sub">No stock crosses these thresholds. Loosen them to see more.</p>')+
+ `<h2>Matching filings, last 2 days</h2>`+(evs.length?evs.sort((x,y)=>y.h-x.h||x.age-y.age).map(item).join(''):'<p class="sub">No filings of the chosen types.</p>')}
+function research(q){const t=(q||'INFY').toUpperCase(),R=RES[t];
+ m.innerHTML=`<input type="text" id="tk" placeholder="NSE ticker, e.g. INFY" value="${t}" aria-label="Ticker"><div class="chips" style="margin-top:8px"><button class="chip" data-r="INFY">INFY</button><button class="chip" data-r="TATAMOTORS">TATAMOTORS</button></div>`+(R?`<h2>Promised vs delivered</h2><div class="sub">${R.name}: last four quarters against management's own guidance. Illustrative figures: this view is not wired to real transcripts yet.</div>`+R.rows.map(r=>`<div class="item" style="border-color:var(--${r[3]=='met'?'up':r[3]=='miss'?'dn':'md'})"><div style="padding:12px 14px"><div class="top"><b>${r[0]}</b><span class="verdict v-${r[3]}">${{met:'Met',miss:'Missed',part:'Partly'}[r[3]]}</span></div><div class="hl">${r[1]}</div><div class="sub">Delivered ${r[2]}. ${r[4]}.</div></div></div>`).join('')+`<div class="ctl" style="margin-top:12px"><b>Read</b><div style="margin-top:4px">${R.read}</div><div class="note">Sources: annual report and concall transcripts only.</div></div>`:`<p class="sub" style="margin-top:14px">This hosted demo only carries two pre-loaded names. The engine itself takes any NSE ticker: it pulls the annual report and last four transcripts from screener.in, then runs the guidance-extraction step. See the repo.</p>`)}
+function render(){head();({digest,alerts,research}[tab])()}
+document.addEventListener('click',e=>{const t=e.target.closest('button,.chip');if(!t)return;
+ if(t.dataset.t){tab=t.dataset.t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b==t))}
+ else if(t.dataset.w)win=+t.dataset.w;
+ else if(t.id=='fold')showR=!showR;
+ else if(t.dataset.k)open[t.dataset.k]=!open[t.dataset.k];
+ else if(t.dataset.c)P.cats[t.dataset.c]^=1;
+ else if(t.dataset.r){tab='research';render();research(t.dataset.r);return}
+ render()});
+document.addEventListener('input',e=>{if(e.target.id=='px'||e.target.id=='vol'){P[e.target.id]=+e.target.value;const y=window.scrollY;alerts();window.scrollTo(0,y);$(e.target.id)&&$(e.target.id).focus()}
+ if(e.target.id=='tk'){const v=e.target.value;research(v);const i=$('tk');i.focus();i.setSelectionRange(v.length,v.length)}});
+render();
+</script></body></html>

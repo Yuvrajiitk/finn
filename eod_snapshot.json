@@ -1,0 +1,30 @@
+[
+  {
+    "symbol": "ADANIPORTS",
+    "chg_pct": 6.29,
+    "vol_x": 2.52,
+    "close": 1872,
+    "why": [
+      "price +6.3%",
+      "volume 2.5x average"
+    ]
+  },
+  {
+    "symbol": "ASIANPAINT",
+    "chg_pct": 0.76,
+    "vol_x": 3.71,
+    "close": 2302,
+    "why": [
+      "volume 3.7x average"
+    ]
+  },
+  {
+    "symbol": "PIDILITIND",
+    "chg_pct": 2.33,
+    "vol_x": 4.62,
+    "close": 1422,
+    "why": [
+      "volume 4.6x average"
+    ]
+  }
+]
